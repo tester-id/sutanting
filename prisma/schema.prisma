@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String   // e.g., "SUTANTING Classic"
+  description String   // e.g., "Perpaduan ketan pulen, susu gurih..."
+  price       Int      // e.g., 15000
+  category    String   @default("CLASSIC") // CLASSIC or PREMIUM
+  isAvailable Boolean  @default(true)
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Topping {
+  id          String   @id @default(cuid())
+  name        String   // e.g., "Keju", "Oreo", "Matcha"
+  extraPrice  Int      @default(0)
+  isAvailable Boolean  @default(true)
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  customerName   String
+  whatsappNumber String
+  address        String
+  city           String
+  notes          String?
+  items          String   // JSON string representing ordered items, selected toppings, and prices
+  totalPrice     Int
+  status         String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  createdAt      DateTime @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}
+

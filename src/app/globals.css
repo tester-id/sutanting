@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
+@theme {
+  /* Colors */
+  --color-sand: #efe7d8;
+  --color-sandlt: #f6f1e7;
+  --color-sanddk: #e6dcc9;
+  --color-terra: #c4633f;
+  --color-terradk: #a64f30;
+  --color-terraxd: #8a4127;
+  --color-ink: #2b251d;
+  --color-inkmut: #6b6253;
+  
+  /* Input specific colors */
+  --color-field-border: #e0d6c2;
+  --color-lbl-color: #5a5040;
+  --color-placeholder-color: #7c715d;
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Shadows */
+  --shadow-btn: 0 8px 20px -6px rgba(196, 99, 63, 0.5);
+  --shadow-card: 0 1px 2px rgba(43, 37, 29, 0.04), 0 12px 32px -12px rgba(43, 37, 29, 0.18);
+  --shadow-soft: 0 1px 2px rgba(43, 37, 29, 0.05), 0 6px 18px -10px rgba(43, 37, 29, 0.14);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #efe7d8;
+  --foreground: #2b251d;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Faint dot-grain texture */
+.bg-grain {
+  background-image: radial-gradient(circle, rgba(43, 37, 29, 0.025) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* 3D Perspective Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Custom interactive input field */
+.field {
+  width: 100%;
+  border: 1px solid var(--color-field-border);
+  color: var(--color-ink);
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 0.72rem 0.95rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
+}
+
+.field::placeholder {
+  color: var(--color-placeholder-color);
+}
+
+.field:focus {
+  border-color: var(--color-terra);
+  box-shadow: 0 0 0 4px rgba(196, 99, 63, 0.14);
+}
+
+/* Custom input labels */
+.lbl {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-lbl-color);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+/* Float Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+.animate-hero-float-1 {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-hero-float-2 {
+  animation: float 7s ease-in-out infinite;
 }
