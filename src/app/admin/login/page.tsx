@@ -7,6 +7,7 @@ import Link from 'next/link';
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,8 +21,8 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password) {
-      setError('Password wajib diisi!');
+    if (!username || !password) {
+      setError('Username dan password wajib diisi!');
       return;
     }
 
@@ -32,7 +33,7 @@ export default function AdminLoginPage() {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (res.ok) {
@@ -40,7 +41,7 @@ export default function AdminLoginPage() {
         router.refresh();
       } else {
         const data = await res.json();
-        setError(data.error || 'Password salah!');
+        setError(data.error || 'Username atau password salah!');
       }
     } catch (err) {
       setError('Terjadi kesalahan jaringan.');
@@ -64,6 +65,23 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm rounded-2xl border border-sanddk bg-sandlt p-6 sm:p-8 shadow-card">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
+            <label className="lbl">Username Administrator</label>
+            <div className="relative flex items-center">
+              <span className="absolute left-3.5 z-10 pointer-events-none text-inkmut/70">
+                <Icon icon="ph:user-fill" className="h-4.5 w-4.5 text-terra" />
+              </span>
+              <input
+                type="text"
+                placeholder="Masukkan username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="field"
+                style={{ paddingLeft: '2.75rem' }}
+              />
+            </div>
+          </div>
+
+          <div>
             <label className="lbl">Password Administrator</label>
             <div className="relative flex items-center">
               <span className="absolute left-3.5 z-10 pointer-events-none text-inkmut/70">
@@ -71,7 +89,7 @@ export default function AdminLoginPage() {
               </span>
               <input
                 type="password"
-                placeholder="Masukkan password admin"
+                placeholder="Masukkan password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="field"

@@ -1,19 +1,17 @@
 import React from 'react';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import AdminDashboard from '@/components/AdminDashboard';
+import { isAuthenticated } from '@/lib/auth';
 
 export const revalidate = 0;
 
 export default async function AdminPage() {
   // 1. Verify authentication state on the server
-  const cookieStore = await cookies();
-  const session = cookieStore.get('sutanting_admin_session');
-
-  if (!session || session.value !== 'true') {
+  if (!(await isAuthenticated())) {
     redirect('/admin/login');
   }
+
 
   // 2. Fetch all required dashboard records directly from the database
   const products = await prisma.product.findMany({

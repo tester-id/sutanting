@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
+import { isAuthenticated } from '@/lib/auth';
 
-// Helper to check authentication
-async function isAuthenticated() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get('sutanting_admin_session');
-  return session?.value === 'true';
-}
 
 export async function GET() {
   try {

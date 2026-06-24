@@ -1,14 +1,6 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
-import crypto from 'crypto';
-
-// Helper to check authentication
-async function isAuthenticated() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get('sutanting_admin_session');
-  return session?.value === 'true';
-}
+import { getSessionAdmin, hashPassword } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -22,10 +14,6 @@ export async function GET() {
     };
 
     dbSettings.forEach((s) => {
-      if (s.key === 'admin_password_hash') {
-        // Prevent exposing hashed credentials
-        return;
-      }
       if (s.key === 'promo_codes') {
         try {
           settingsObj[s.key] = JSON.parse(s.value);
@@ -39,6 +27,10 @@ export async function GET() {
       }
     });
 
+    // Retrieve active logged in admin's username
+    const admin = await getSessionAdmin();
+    settingsObj.admin_username = admin ? admin.username : 'admin';
+
     return NextResponse.json(settingsObj);
   } catch (error) {
     return NextResponse.json({ error: 'Gagal mengambil data pengaturan' }, { status: 500 });
@@ -46,13 +38,14 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  if (!(await isAuthenticated())) {
+  const admin = await getSessionAdmin();
+  if (!admin) {
     return NextResponse.json({ error: 'Akses ditolak' }, { status: 401 });
   }
 
   try {
     const body = await request.json();
-    const { shipping_fee, tax_percentage, promo_codes, new_password } = body;
+    const { shipping_fee, tax_percentage, promo_codes, new_username, new_password } = body;
 
     if (shipping_fee !== undefined) {
       await prisma.setting.upsert({
@@ -79,12 +72,20 @@ export async function PUT(request: Request) {
       });
     }
 
+    // Update username if requested
+    if (new_username !== undefined && new_username.trim() !== '') {
+      await prisma.admin.update({
+        where: { id: admin.id },
+        data: { username: new_username.trim() },
+      });
+    }
+
+    // Update password if requested
     if (new_password !== undefined && new_password.trim() !== '') {
-      const newHash = crypto.createHash('sha256').update(new_password).digest('hex');
-      await prisma.setting.upsert({
-        where: { key: 'admin_password_hash' },
-        update: { value: newHash },
-        create: { key: 'admin_password_hash', value: newHash },
+      const newHash = hashPassword(new_password);
+      await prisma.admin.update({
+        where: { id: admin.id },
+        data: { passwordHash: newHash },
       });
     }
 

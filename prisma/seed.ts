@@ -7,6 +7,8 @@ async function main() {
   console.log('Seeding database...');
 
   // Clear existing data
+  await prisma.session.deleteMany({});
+  await prisma.admin.deleteMany({});
   await prisma.product.deleteMany({});
   await prisma.topping.deleteMany({});
   await prisma.order.deleteMany({});
@@ -122,13 +124,22 @@ async function main() {
     await prisma.order.create({ data: order });
   }
 
+  // Seed Admin Account (Username: admin, Password: admin)
+  const salt = crypto.randomBytes(16).toString('hex');
+  const passwordHash = `${salt}:${crypto.pbkdf2Sync('admin', salt, 10000, 64, 'sha512').toString('hex')}`;
+
+  await prisma.admin.create({
+    data: {
+      username: 'admin',
+      passwordHash,
+    },
+  });
+
   // Seed Settings
-  const adminPasswordHash = crypto.createHash('sha256').update('admin').digest('hex');
   const settings = [
-    { key: 'shipping_fee', value: '0' },
-    { key: 'tax_percentage', value: '0' },
+    { key: 'shipping_fee', value: '10000' },
+    { key: 'tax_percentage', value: '5' },
     { key: 'promo_codes', value: JSON.stringify([{ code: 'SUTANTINGHALAL', discount: 5000 }]) },
-    { key: 'admin_password_hash', value: adminPasswordHash },
   ];
 
   for (const setting of settings) {

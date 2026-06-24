@@ -69,6 +69,7 @@ export default function AdminDashboard({
   const [promoCodes, setPromoCodes] = useState<Array<{ code: string; discount: number }>>([]);
   const [newPromoCode, setNewPromoCode] = useState('');
   const [newPromoDiscount, setNewPromoDiscount] = useState<number>(0);
+  const [adminUsername, setAdminUsername] = useState('admin');
   const [newAdminPassword, setNewAdminPassword] = useState('');
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
@@ -84,6 +85,7 @@ export default function AdminDashboard({
           setShippingFee(Number(data.shipping_fee) ?? 10000);
           setTaxPercentage(Number(data.tax_percentage) ?? 5);
           setPromoCodes(data.promo_codes ?? []);
+          setAdminUsername(data.admin_username ?? 'admin');
         }
       })
       .catch((err) => console.error('Error fetching settings:', err));
@@ -1181,6 +1183,26 @@ export default function AdminDashboard({
 
                   <h4 className="text-sm font-750 text-ink border-b border-sandlt pb-2 mb-4 pt-4">Keamanan & Akses Admin</h4>
                   
+                  <div className="mb-4">
+                    <label className="lbl">Username Administrator</label>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-3.5 z-10 pointer-events-none text-inkmut/70">
+                        <Icon icon="ph:user-fill" className="h-4 w-4 text-terra" />
+                      </span>
+                      <input
+                        type="text"
+                        value={adminUsername}
+                        onChange={(e) => setAdminUsername(e.target.value)}
+                        className="field"
+                        style={{ paddingLeft: '2.5rem' }}
+                        placeholder="Masukkan username admin"
+                      />
+                    </div>
+                    <p className="text-[10px] text-inkmut/60 mt-1">
+                      Username yang digunakan untuk masuk ke halaman admin ini.
+                    </p>
+                  </div>
+
                   <div>
                     <label className="lbl">Ubah Password Administrator</label>
                     <div className="relative flex items-center">
@@ -1314,6 +1336,7 @@ export default function AdminDashboard({
                           shipping_fee: shippingFee,
                           tax_percentage: taxPercentage,
                           promo_codes: promoCodes,
+                          new_username: adminUsername,
                           new_password: newAdminPassword,
                         }),
                       });
