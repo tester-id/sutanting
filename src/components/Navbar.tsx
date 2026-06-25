@@ -136,7 +136,7 @@ export default function Navbar() {
                 <Icon icon="ph:shopping-cart-bold" className="h-5 w-5" />
                 Checkout
               </Link>
-              <Link
+              {/* <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-700 transition-colors ${
@@ -145,7 +145,7 @@ export default function Navbar() {
               >
                 <Icon icon="ph:gear-six-bold" className="h-5 w-5" />
                 Admin Panel
-              </Link>
+              </Link> */}
             </nav>
           </div>
         )}
